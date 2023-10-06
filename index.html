@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo App</title>
+  </head>
+  <body>
+    <div id="app">
+      <!-- my app renders here -->
+    </div>
+    <script src="react/react.js"></script>
+    <script src="react/react-dom.js"></script>
+    <script src="react/babel.js"></script>
+
+    <script type="text/babel">
+      // my app's code
+      class Todo extends React.Component {
+        constructor() {
+          super();
+          this.state = {
+            todo: [], //todo's are an array
+            edit: false, //edit state of a todo item
+          };
+
+          this.showEditor = this.showEditor.bind(this);
+        }
+
+        showEditor(e) {
+          this.setState({
+            edit: {
+              li: true,
+              id: e.target.id,
+            },
+          });
+        }
+
+        //Start of Handlers
+
+        //handler for todo-name: 'text'
+        //the state 'text' is updated
+        onTextChange(event) {
+          this.setState({
+            text: event.target.value,
+          });
+        }
+        //handler for add-todo button
+        //set the new todo and the prevarray into seperate variable then use the spread operator to combine them
+        onButttonClick(event) {
+          let newTodo = this.state.text;
+          let prevArray = this.state.todo;
+          let newArray;
+
+          //update the todo array function
+          //this function updates the newArray variable with the new array values
+          function UpdateTodoArray(Todo) {
+            newArray = [...prevArray, Todo];
+            return newArray;
+          }
+          //the state 'text'''s value is passed to the 'todo' state
+          this.setState({
+            todo: UpdateTodoArray(newTodo),
+          });
+
+          //alert(this.state.todo);
+        }
+        //End of Handlers
+
+        //Lifecycle methods
+        componentDidMount() {
+          console.log("componentDidMount");
+        }
+        componentWillUnmount() {
+          console.log("componentWillUnmount");
+        }
+
+        render() {
+          const text = "text" in this.state ? this.state.text : this.props.text;
+          return (
+            <div>
+              <h1>Todo App</h1>
+              <label htmlFor="todo-name">Todo ::</label>
+              <input
+                type="text"
+                onChange={(event) => this.onTextChange(event)}
+                htmlFor="todo-value"
+                name=""
+                id=""
+              />
+              <button onClick={(e) => this.onButttonClick(e)} id="add-todo">
+                Add Todo
+              </button>
+              <div className="todo-list">
+                <h3>{text}</h3>
+                <ul onDoubleClick={this.showEditor}>
+                  {this.state.todo.map((data, idx) => {
+                    // Turn `data` into an input element if the `idx`
+                    // matches the select '<li>' id property
+                    // otherwise, just show it as text
+
+                    const edit = this.state.edit;
+                    if (edit && edit.li === true && edit.id == idx) {
+                      data = (
+                        <form onSubmit={this.save}>
+                          <input type="text" defaultValue={data} />
+                        </form>
+                      );
+                    }
+                    return (
+                      <li key={idx} id={idx}>
+                        {data}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+          );
+        }
+      }
+
+      //ReactDom renderring
+      ReactDOM.render(<Todo />, document.getElementById("app"));
+    </script>
+  </body>
+</html>
